@@ -1,0 +1,38 @@
+name: Terraform Validation and Scan
+
+on:
+  push:
+    branches:
+      - feature/umair-mehboob-terraform
+
+jobs:
+  validate-terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.5
+
+      - name: Validate Terraform
+        run: terraform validate
+
+      - name: Scan Terraform
+        run: tflint
+
+       - name: Terraform Apply
+         run: terraform apply
+
+       - name: Capture Terraform Outputs
+         run: terraform output -json > terraform-outputs.json
+         id: terraform-outputs
+
+       - name: Upload Outputs Artifact
+         uses: actions/upload-artifact@v2
+         with:
+           name: terraform-outputs
+           path: terraform-outputs.json 
